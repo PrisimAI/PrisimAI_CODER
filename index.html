@@ -3,58 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CJ Coder</title>
+  <title>CJ Studio — iOS Style</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode">
-  <header>
-    <h1>CJ Coder 🚀</h1>
-    <button id="theme-toggle">🌙</button>
+<body>
+  <header class="glass header">
+    <h1>✨ CJ Studio</h1>
   </header>
 
   <main>
-    <!-- Chat Panel -->
-    <div class="left-panel">
-      <div class="chat-header">
-        <button id="new-chat">+ New Chat</button>
-        <select>
-          <option>GPT</option>
-          <option>LLaMA</option>
-        </select>
-      </div>
-      <div class="chat" id="chat-output"></div>
+    <!-- Left Panel: Chat -->
+    <section class="glass panel left-panel">
+      <h2>Chat</h2>
+      <div id="chat-output" class="chat-output"></div>
       <div class="chat-input">
-        <input type="text" id="chat-input" placeholder="Type here...">
-        <button id="chat-send">Send</button>
+        <input type="text" id="chat-input" placeholder="Ask Pollinations AI...">
+        <button id="chat-send" class="ios-icon">➤</button>
       </div>
-    </div>
+    </section>
 
-    <!-- Editor Panel -->
-    <div class="right-panel">
-      <div class="toolbar">
-        <button id="download-zip">⬇️ Download ZIP</button>
-      </div>
+    <!-- Right Panel: Editor -->
+    <section class="glass panel right-panel">
       <div class="tabs">
-        <div class="tab active" data-tab="html">HTML</div>
-        <div class="tab" data-tab="css">CSS</div>
-        <div class="tab" data-tab="js">JS</div>
-        <div class="tab" data-tab="output">Output</div>
+        <div class="tab active" data-target="html">HTML</div>
+        <div class="tab" data-target="css">CSS</div>
+        <div class="tab" data-target="js">JS</div>
       </div>
-      <div class="content">
-        <textarea id="html-code"><h1>Hello World</h1></textarea>
-        <textarea id="css-code" class="hidden">h1 { color: dodgerblue; }</textarea>
-        <textarea id="js-code" class="hidden">console.log("Hello from JS!");</textarea>
-        <iframe id="preview" class="hidden"></iframe>
+      <textarea id="html-editor" class="editor"></textarea>
+      <textarea id="css-editor" class="editor hidden"></textarea>
+      <textarea id="js-editor" class="editor hidden"></textarea>
+      <div class="editor-actions">
+        <button id="run" class="ios-icon">▶️ Run</button>
+        <button id="download" class="ios-icon">⬇️ ZIP</button>
       </div>
-    </div>
+    </section>
   </main>
 
-  <footer>
-    <p>Made by CJ ✨</p>
+  <section class="glass preview-panel">
+    <iframe id="preview"></iframe>
+  </section>
+
+  <footer class="glass footer">
+    <p>Made with ❤️ by CJ</p>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
