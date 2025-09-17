@@ -37,15 +37,12 @@ document.getElementById("download").addEventListener("click", async () => {
   a.click();
 });
 
-// Chat with Pollinations
-const chatInput = document.getElementById("chat-input");
-const chatSend = document.getElementById("chat-send");
-const chatOutput = document.getElementById("chat-output");
-
+// Chat with Pollinations -> inject code
 chatSend.addEventListener("click", async () => {
   const text = chatInput.value.trim();
   if (!text) return;
 
+  // Show user msg
   const userMsg = document.createElement("div");
   userMsg.className = "chat-message user";
   userMsg.textContent = text;
@@ -54,17 +51,42 @@ chatSend.addEventListener("click", async () => {
 
   const botMsg = document.createElement("div");
   botMsg.className = "chat-message bot";
-  botMsg.textContent = "…";
+  botMsg.textContent = "Generating code…";
   chatOutput.appendChild(botMsg);
   chatOutput.scrollTop = chatOutput.scrollHeight;
 
   chatInput.value = "";
 
   try {
-    const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}`);
+    // Force Pollinations to respond with code-only
+    const response = await fetch(
+      `https://text.pollinations.ai/${encodeURIComponent(
+        text + " — Respond only with code, wrapped in ```html```, ```css```, ```js``` blocks."
+      )}`
+    );
     if (!response.ok) throw new Error("HTTP " + response.status);
     const aiText = await response.text();
+
+    // Show raw AI text in chat (optional)
     botMsg.textContent = aiText;
+
+    // Parse fenced code blocks
+    const htmlMatch = aiText.match(/```html([\s\S]*?)```/i);
+    const cssMatch  = aiText.match(/```css([\s\S]*?)```/i);
+    const jsMatch   = aiText.match(/```js([\s\S]*?)```/i);
+
+    if (htmlMatch) editors.html.value = htmlMatch[1].trim();
+    if (cssMatch)  editors.css.value  = cssMatch[1].trim();
+    if (jsMatch)   editors.js.value   = jsMatch[1].trim();
+
+    // If nothing matched, put whole response in HTML
+    if (!htmlMatch && !cssMatch && !jsMatch) {
+      editors.html.value = aiText.trim();
+    }
+
+    // Auto-run preview
+    document.getElementById("run").click();
+
   } catch (err) {
     console.error("Pollinations error:", err);
     botMsg.textContent = "[Error fetching AI response]";
