@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSphere AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape1 {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape3 {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-field, .code-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus, .code-textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .code-textarea {
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover .file-upload-label {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-area {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result-area.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-area h3 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .result-content {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tab-btn {
+                width: 200px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-elements">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">CodeSphere AI</h1>
+            <p class="subtitle">Generate, Analyze, and Perfect Your Code with AI</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('generate')">Generate Code</button>
+            <button class="tab-btn" onclick="switchTab('check')">Check Code</button>
+        </div>
+
+        <!-- Generate Code Panel -->
+        <div id="generate-panel" class="content-panel active">
+            <h2 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 1.5rem;">Generate Code with AI</h2>
+            
+            <div class="input-group">
+                <label for="code-prompt">Describe what you want to code:</label>
+                <textarea id="code-prompt" class="code-textarea" placeholder="e.g., Create a Python function that sorts a list of dictionaries by a specific key"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="language-select">Programming Language:</label>
+                <select id="language-select" class="input-field">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="sql">SQL</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <button class="action-btn" onclick="generateCode()">Generate Code</button>
+
+            <div class="loading" id="generate-loading">
+                <div class="spinner"></div>
+                <p>Generating your code...</p>
+            </div>
+
+            <div class="result-area" id="generate-result">
+                <h3>Generated Code:</h3>
+                <div class="result-content" id="generate-content"></div>
+            </div>
+        </div>
+
+        <!-- Check Code Panel -->
+        <div id="check-panel" class="content-panel">
+            <h2 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 1.5rem;">Check Your Code</h2>
+            
+            <div class="input-group">
+                <label>Upload Code File:</label>
+                <div class="file-upload">
+                    <input type="file" id="code-file" accept=".py,.js,.java,.cpp,.html,.css,.sql,.txt" onchange="handleFileUpload(event)">
+                    <label for="code-file" class="file-upload-label">
+                        📁 Click to upload code file or drag & drop
+                    </label>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 1rem 0; color: rgba(255, 255, 255, 0.6);">OR</div>
+
+            <div class="input-group">
+                <label for="code-input">Paste your code:</label>
+                <textarea id="code-input" class="code-textarea" placeholder="Paste your code here..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="check-type">What would you like to check?</label>
+                <select id="check-type" class="input-field">
+                    <option value="review">General Code Review</option>
+                    <option value="bugs">Find Bugs & Issues</option>
+                    <option value="optimize">Optimization Suggestions</option>
+                    <option value="security">Security Analysis</option>
+                    <option value="style">Code Style & Best Practices</option>
+                </select>
+            </div>
+
+            <button class="action-btn" onclick="checkCode()">Analyze Code</button>
+
+            <div class="loading" id="check-loading">
+                <div class="spinner"></div>
+                <p>Analyzing your code...</p>
+            </div>
+
+            <div class="result-area" id="check-result">
+                <h3>Code Analysis:</h3>
+                <div class="result-content" id="check-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Remove active class from all tabs and panels
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding panel
+            event.target.classList.add('active');
+            document.getElementById(tab + '-panel').classList.add('active');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('code-input').value = e.target.result;
+                    document.querySelector('.file-upload-label').innerHTML = `📁 ${file.name} loaded`;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        async function generateCode() {
+            const prompt = document.getElementById('code-prompt').value.trim();
+            const language = document.getElementById('language-select').value;
+            
+            if (!prompt) {
+                alert('Please describe what you want to code!');
+                return;
+            }
+
+            const loading = document.getElementById('generate-loading');
+            const resultArea = document.getElementById('generate-result');
+            const resultContent = document.getElementById('generate-content');
+            
+            loading.classList.add('show');
+            resultArea.classList.remove('show');
+
+            try {
+                const fullPrompt = `Generate ${language} code for: ${prompt}. Provide clean, well-commented code with explanations.`;
+                
+                // Use correct Pollinations API format: GET https://text.pollinations.ai/{prompt}
+                const encodedPrompt = encodeURIComponent(fullPrompt);
+                const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.text();
+                
+                loading.classList.remove('show');
+                resultContent.textContent = result;
+                resultArea.classList.add('show');
+
+            } catch (error) {
+                loading.classList.remove('show');
+                
+                // Fallback demo response if API fails
+                const demoResponse = generateDemoCode(prompt, language);
+                resultContent.innerHTML = `<div style="color: #ffeb3b; margin-bottom: 1rem;">⚠️ API temporarily unavailable. Here's a demo response:</div><div style="color: #fff;">${demoResponse}</div>`;
+                resultArea.classList.add('show');
+            }
+        }
+
+        async function checkCode() {
+            const code = document.getElementById('code-input').value.trim();
+            const checkType = document.getElementById('check-type').value;
+            
+            if (!code) {
+                alert('Please provide code to analyze!');
+                return;
+            }
+
+            const loading = document.getElementById('check-loading');
+            const resultArea = document.getElementById('check-result');
+            const resultContent = document.getElementById('check-content');
+            
+            loading.classList.add('show');
+            resultArea.classList.remove('show');
+
+            try {
+                let promptText = '';
+                switch(checkType) {
+                    case 'review':
+                        promptText = 'Please review this code and provide feedback on overall quality, structure, and improvements:';
+                        break;
+                    case 'bugs':
+                        promptText = 'Please analyze this code for potential bugs, errors, and issues:';
+                        break;
+                    case 'optimize':
+                        promptText = 'Please analyze this code and suggest optimizations for better performance:';
+                        break;
+                    case 'security':
+                        promptText = 'Please analyze this code for security vulnerabilities and best practices:';
+                        break;
+                    case 'style':
+                        promptText = 'Please analyze this code for style issues and best coding practices:';
+                        break;
+                }
+
+                const fullPrompt = `${promptText}\n\n${code}\n\nProvide detailed analysis and actionable suggestions.`;
+                
+                // Use correct Pollinations API format: GET https://text.pollinations.ai/{prompt}
+                const encodedPrompt = encodeURIComponent(fullPrompt);
+                const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.text();
+                
+                loading.classList.remove('show');
+                resultContent.textContent = result;
+                resultArea.classList.add('show');
+
+            } catch (error) {
+                loading.classList.remove('show');
+                
+                // Fallback demo response if API fails
+                const demoResponse = generateDemoAnalysis(code, checkType);
+                resultContent.innerHTML = `<div style="color: #ffeb3b; margin-bottom: 1rem;">⚠️ API temporarily unavailable. Here's a demo response:</div><div style="color: #fff;">${demoResponse}</div>`;
+                resultArea.classList.add('show');
+            }
+        }
+
+        // Demo functions for fallback responses
+        function generateDemoCode(prompt, language) {
+            const examples = {
+                python: `# ${prompt}
+def example_function():
+    """
+    This is a demo function generated for: ${prompt}
+    In a real scenario, this would be AI-generated code.
+    """
+    print("Hello, World!")
+    return True
+
+# Example usage
+if __name__ == "__main__":
+    result = example_function()
+    print(f"Function returned: {result}")`,
+
+                javascript: `// ${prompt}
+/**
+ * Demo function generated for: ${prompt}
+ * In a real scenario, this would be AI-generated code.
+ */
+function exampleFunction() {
+    console.log("Hello, World!");
+    return true;
+}
+
+// Example usage
+const result = exampleFunction();
+console.log(\`Function returned: \${result}\`);`,
+
+                html: `<!-- ${prompt} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Page</title>
+</head>
+<body>
+    <h1>Demo HTML Page</h1>
+    <p>This is a demo response for: ${prompt}</p>
+    <p>In a real scenario, this would be AI-generated HTML.</p>
+</body>
+</html>`
+            };
+
+            return examples[language] || `// ${prompt}\n// Demo code for ${language}\n// This would be AI-generated code in a real scenario.`;
+        }
+
+        function generateDemoAnalysis(code, checkType) {
+            const analyses = {
+                review: `Code Review Analysis:
+
+✅ Positive aspects:
+- Code structure appears organized
+- Basic functionality is implemented
+
+⚠️ Areas for improvement:
+- Consider adding more comments
+- Variable naming could be more descriptive
+- Error handling could be enhanced
+
+📝 Suggestions:
+- Add input validation
+- Implement proper error handling
+- Consider code reusability
+
+Note: This is a demo analysis. The real AI would provide more detailed insights.`,
+
+                bugs: `Bug Analysis:
+
+🔍 Potential Issues Found:
+- Check for null/undefined variables
+- Verify array bounds before access
+- Ensure proper error handling
+
+⚠️ Common Bug Patterns:
+- Missing return statements
+- Unhandled exceptions
+- Memory leaks (if applicable)
+
+🛠️ Recommendations:
+- Add defensive programming
+- Implement proper validation
+- Use try-catch blocks
+
+Note: This is a demo analysis. The real AI would scan for specific bugs.`,
+
+                optimize: `Performance Optimization Analysis:
+
+🚀 Optimization Opportunities:
+- Algorithm complexity could be improved
+- Consider caching frequently used data
+- Minimize redundant operations
+
+💡 Suggestions:
+- Use efficient data structures
+- Implement lazy loading where applicable
+- Consider parallel processing
+
+📊 Performance Tips:
+- Profile your code to identify bottlenecks
+- Optimize loops and recursive functions
+- Use appropriate design patterns
+
+Note: This is a demo analysis. The real AI would provide specific optimizations.`
+            };
+
+            return analyses[checkType] || "Demo analysis: The code looks functional. In a real scenario, detailed AI analysis would be provided here.";
+        }
+
+        // Add drag and drop functionality
+        const fileUpload = document.querySelector('.file-upload');
+        
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.style.background = 'rgba(255, 255, 255, 0.2)';
+        });
+
+        fileUpload.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            fileUpload.style.background = 'rgba(255, 255, 255, 0.1)';
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.style.background = 'rgba(255, 255, 255, 0.1)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('code-input').value = e.target.result;
+                    document.querySelector('.file-upload-label').innerHTML = `📁 ${file.name} loaded`;
+                };
+                reader.readAsText(file);
+            }
+        });
+    </script>
+</body>
+</html>
